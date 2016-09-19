@@ -2,15 +2,16 @@ package tv.codely.cellular_automata
 
 import org.scalatest._
 import org.scalatest.Matchers._
+import tv.codely.cellular_automata.CellularAutomata.{AliveCell, DeadCell}
 
 final class RulesTest extends WordSpec with GivenWhenThen {
 
   "Rules" should {
     "be able to evolve an organism applying rule-90" in {
 
-      val initialOrganism = List(true, true, false, true, false, true, false)
+      val initialOrganism = List(AliveCell, AliveCell, DeadCell, AliveCell, DeadCell, AliveCell, DeadCell)
 
-      val expectedOrganismEvolution = List(true, true, false, false, false, false, true)
+      val expectedOrganismEvolution = List(AliveCell, AliveCell, DeadCell, DeadCell, DeadCell, DeadCell, AliveCell)
 
       val actualOrganismEvolution = Evolver.evolveStep(
         initialState = initialOrganism,
@@ -24,15 +25,15 @@ final class RulesTest extends WordSpec with GivenWhenThen {
   "Evolver" should {
     "evolve an organism as times as specified" in {
 
-      val initialOrganism = List(true, true, false, true, false, true, false)
+      val initialOrganism = List(AliveCell, AliveCell, DeadCell, AliveCell, DeadCell, AliveCell, DeadCell)
 
       val expectedOrganismEvolution = List(
-        List(true, true, false, true, false, true, false),
-        List(true, true, false, false, false, false, true),
-        List(true, true, true, false, false, true, false),
-        List(true, false, true, true, true, false, true),
-        List(false, false, true, false, true, false, false),
-        List(false, true, false, false, false, true, false)
+        List(AliveCell, AliveCell, DeadCell, AliveCell, DeadCell, AliveCell, DeadCell),
+        List(AliveCell, AliveCell, DeadCell, DeadCell, DeadCell, DeadCell, AliveCell),
+        List(AliveCell, AliveCell, AliveCell, DeadCell, DeadCell, AliveCell, DeadCell),
+        List(AliveCell, DeadCell, AliveCell, AliveCell, AliveCell, DeadCell, AliveCell),
+        List(DeadCell, DeadCell, AliveCell, DeadCell, AliveCell, DeadCell, DeadCell),
+        List(DeadCell, AliveCell, DeadCell, DeadCell, DeadCell, AliveCell, DeadCell)
       )
 
       val actualOrganismEvolution = Evolver.evolve(
@@ -49,9 +50,9 @@ final class RulesTest extends WordSpec with GivenWhenThen {
     "transform died cells for spaces and alive ones for x" in {
 
       val organismEvolutions = List(
-        List(true, true, false, true, false, true, false),
-        List(true, true, false, false, false, false, true),
-        List(true, true, true, false, false, true, false)
+        List(AliveCell, AliveCell, DeadCell, AliveCell, DeadCell, AliveCell, DeadCell),
+        List(AliveCell, AliveCell, DeadCell, DeadCell, DeadCell, DeadCell, AliveCell),
+        List(AliveCell, AliveCell, AliveCell, DeadCell, DeadCell, AliveCell, DeadCell)
       )
 
       val expectedOrganismEvolutionsRendered = "xx x x \nxx    x\nxxx  x "
