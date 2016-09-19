@@ -1,6 +1,13 @@
 package tv.codely.cellular_automata
 
+import tv.codely.cellular_automata.CellularAutomata.{Evolutions, Organism}
+
 case class Chunk(firstValue: Boolean, secondValue: Boolean, thirdValue: Boolean)
+
+object CellularAutomata {
+  type Organism = List[Boolean]
+  type Evolutions = List[Organism]
+}
 
 object Rules {
   def rule90(chunk: Chunk): Boolean = chunk match {
@@ -16,7 +23,7 @@ object Rules {
 }
 
 object Evolver {
-  def evolveStep(initialState: List[Boolean], rule: Chunk => Boolean): List[Boolean] = {
+  def evolveStep(initialState: Organism, rule: Chunk => Boolean): Organism = {
     val wrappedInitialState = List(false) ++ initialState ++ List(false)
 
     val chunkList = wrappedInitialState.sliding(3).map { rawChunk =>
@@ -28,7 +35,15 @@ object Evolver {
     chunkList.map(rule).toList
   }
 
-  def evolve(initialState: List[Boolean], rule: Chunk => Boolean, steps: Int): List[List[Boolean]] = {
+  def evolve(initialState: Organism, rule: Chunk => Boolean, steps: Int): Evolutions = {
     (1 to steps).toList.scanLeft(initialState)((state, _) => evolveStep(state, rule))
+  }
+}
+
+object Renderer {
+  val translations = Map(false -> " ", true -> "x")
+
+  def render(organismEvolutions: Evolutions): String = {
+    organismEvolutions.map(organism => organism.map(translations).mkString).mkString("\n")
   }
 }

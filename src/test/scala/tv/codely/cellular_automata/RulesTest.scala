@@ -44,4 +44,21 @@ final class RulesTest extends WordSpec with GivenWhenThen {
       actualOrganismEvolution shouldBe expectedOrganismEvolution
     }
   }
+
+  "Renderer" should {
+    "transform died cells for spaces and alive ones for x" in {
+
+      val organismEvolutions = List(
+        List(true, true, false, true, false, true, false),
+        List(true, true, false, false, false, false, true),
+        List(true, true, true, false, false, true, false)
+      )
+
+      val expectedOrganismEvolutionsRendered = "xx x x \nxx    x\nxxx  x "
+
+      val actualOrganismEvolutionsRendered = Renderer.render(organismEvolutions)
+
+      actualOrganismEvolutionsRendered shouldBe expectedOrganismEvolutionsRendered
+    }
+  }
 }
