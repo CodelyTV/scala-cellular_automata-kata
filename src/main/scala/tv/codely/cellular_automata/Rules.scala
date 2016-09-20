@@ -3,7 +3,6 @@ package tv.codely.cellular_automata
 import tv.codely.cellular_automata.CellularAutomata._
 
 object CellularAutomata {
-  type Organism = List[Cell]
   type Evolutions = List[Organism]
 
   abstract class Cell
@@ -11,6 +10,14 @@ object CellularAutomata {
   case object DeadCell extends Cell
 
   case class CellsChunk(first: Cell, second: Cell, third: Cell)
+
+  case class Organism(rawOrganism: List[Cell]) {
+    def wrappedWithDeadCells: Organism = Organism(List(DeadCell) ++ rawOrganism ++ List(DeadCell))
+
+    def chunks: List[CellsChunk] = rawOrganism.sliding(3).toList.map {
+      case List(left, center, right) => CellsChunk(left, center, right)
+    }
+  }
 }
 
 object Rules {
@@ -28,15 +35,7 @@ object Rules {
 
 object Evolver {
   def evolveStep(initialState: Organism, rule: CellsChunk => Cell): Organism = {
-    val wrappedInitialState = List(DeadCell) ++ initialState ++ List(DeadCell)
-
-    val chunkList = wrappedInitialState.sliding(3).map { rawChunk =>
-      val List(firstValue, secondValue, thirdValue) = rawChunk
-
-      CellsChunk(firstValue, secondValue, thirdValue)
-    }
-
-    chunkList.map(rule).toList
+    Organism(initialState.wrappedWithDeadCells.chunks.map(rule))
   }
 
   def evolve(initialState: Organism, rule: CellsChunk => Cell, steps: Int): Evolutions = {
@@ -48,6 +47,6 @@ object Renderer {
   val translations: Map[Cell, String] = Map(DeadCell -> " ", AliveCell -> "x")
 
   def render(organismEvolutions: Evolutions): String = {
-    organismEvolutions.map(organism => organism.map(translations).mkString).mkString("\n")
+    organismEvolutions.map(organism => organism.rawOrganism.map(translations).mkString).mkString("\n")
   }
 }
